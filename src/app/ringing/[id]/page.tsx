@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { DotMatrixText } from '@/components/DotMatrixText';
 import { Button } from '@/components/ui/button';
@@ -16,17 +16,32 @@ export default function RingingScreen() {
   const router = useRouter();
   const { id } = useParams();
   const { alarms } = useAlarms();
-  const [currentTime, setCurrentTime] = useState(new Date());
+  
+  const [mounted, setMounted] = useState(false);
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [targetObject, setTargetObject] = useState<string>('');
   
   const alarm = alarms.find(a => a.id === id);
-  const targetObject = useMemo(() => 
-    OBJECT_OPTIONS[Math.floor(Math.random() * OBJECT_OPTIONS.length)],
-  []);
 
   useEffect(() => {
+    setMounted(true);
+    setCurrentTime(new Date());
+    setTargetObject(OBJECT_OPTIONS[Math.floor(Math.random() * OBJECT_OPTIONS.length)]);
+    
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  if (!mounted || !currentTime) {
+    return (
+      <div className="fixed inset-0 bg-background flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+          <DotMatrixText className="text-xs text-muted-foreground">Initializing Quest...</DotMatrixText>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col items-center justify-between p-8 overflow-hidden">
@@ -54,8 +69,8 @@ export default function RingingScreen() {
       <div className="z-10 w-full flex flex-col items-center gap-6">
         <div className="glass-card p-8 rounded-3xl border-primary/20 bg-primary/5 w-full max-w-sm text-center">
           <DotMatrixText className="text-sm text-muted-foreground tracking-widest mb-4">QUEST ASSIGNED</DotMatrixText>
-          <div className="text-2xl font-bold mb-2">Capture a picture of:</div>
-          <div className="text-4xl font-headline text-primary font-bold uppercase tracking-tight mb-4">
+          <div className="text-2xl font-bold mb-2 text-white/90">Capture a picture of:</div>
+          <div className="text-4xl font-headline text-primary font-bold uppercase tracking-tight mb-4 drop-shadow-[0_0_15px_rgba(64,191,191,0.3)]">
             {targetObject}
           </div>
           <p className="text-xs text-muted-foreground/60 leading-relaxed px-4">
