@@ -3,38 +3,35 @@
 
 A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google Gemini AI.
 
-## 📱 Convert to Android APK
+## 📱 Build Your Android APK
 
-This project is optimized for **Capacitor** to wrap the Next.js static export into a native Android app.
+This project is configured with **Capacitor** to wrap the Next.js static export into a native Android app.
 
 ### 1. Prerequisites
-- Install [Android Studio](https://developer.android.com/studio).
-- Install the **Android SDK** from the Android Studio SDK Manager.
+- [Android Studio](https://developer.android.com/studio) installed and configured.
+- **Android SDK** installed via the Android Studio SDK Manager.
 
-### 2. Setup Environment
-Ensure your Gemini API key is in your `.env` file:
-- `NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here`
+### 2. Generate the APK
+Follow these commands in order:
 
-### 3. Build & Package
 ```bash
-# 1. Install dependencies
-npm install
-
-# 2. Build the static project
+# 1. Build the static web project
 npm run build
 
-# 3. Add/Sync Android platform
+# 2. Add the Android platform (first time only)
 npx cap add android
+
+# 3. Sync the 'out' directory to the Android project
 npx cap sync android
 
-# 4. Open in Android Studio
+# 4. Open the project in Android Studio
 npx cap open android
 ```
 
-### 4. Generate APK
-In Android Studio:
-1. Go to **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
-2. The generated `.apk` will be in `android/app/build/outputs/apk/debug/`.
+### 3. Final Step in Android Studio
+1. Wait for the Gradle sync to complete.
+2. Go to **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+3. Locate your file in `android/app/build/outputs/apk/debug/app-debug.apk`.
 
 ---
 
@@ -42,8 +39,9 @@ In Android Studio:
 - **AI Vision Quest**: Stop the alarm by photographing a specific object assigned by Gemini.
 - **Nothing Design Language**: Minimalist aesthetics with dot-matrix typography.
 - **Cloud Sync**: Powered by Firebase—your alarms and stats are synced across devices.
+- **Offline Capable**: Works as a native app even without an active internet connection (once installed).
 
-## 🛠 Setup (Local & PWA)
-1. Get an API Key at [Google AI Studio](https://aistudio.google.com/) and add it to `.env` as `NEXT_PUBLIC_GEMINI_API_KEY`.
-2. Run `npm run dev` to start locally.
-3. Access via your phone's browser and "Add to Home Screen" for a native-like experience.
+## 🛠 Local Development (Web)
+1. Ensure your Gemini API key is in your `.env` file as `NEXT_PUBLIC_GEMINI_API_KEY`.
+2. Run `npm run dev` to start the local server.
+3. Access at `http://localhost:9002`.
