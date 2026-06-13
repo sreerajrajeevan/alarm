@@ -2,6 +2,8 @@
 import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
+import { AlarmMonitor } from '@/components/AlarmMonitor';
+import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
   title: 'AlarmQuest | Wake Up with AI',
@@ -40,7 +42,9 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen dot-pattern selection:bg-primary/30">
         <FirebaseClientProvider>
+          <AlarmMonitor />
           {children}
+          <Toaster />
         </FirebaseClientProvider>
       </body>
     </html>

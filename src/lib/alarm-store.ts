@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -23,6 +24,7 @@ export interface Alarm {
   difficulty: Difficulty;
   vibrate: boolean;
   rampUp: boolean;
+  lastFired?: string; // ISO date string to prevent double firing
 }
 
 export interface Stats {
@@ -32,7 +34,6 @@ export interface Stats {
   history: { date: string; time: string; object: string }[];
 }
 
-// Hardcoded for single-user guest experience in Capacitor
 const GUEST_UID = 'guest-user';
 
 export function useAlarms() {
@@ -64,7 +65,14 @@ export function useAlarms() {
     deleteDoc(doc(db, 'users', GUEST_UID, 'alarms', id));
   };
 
-  return { alarms: alarms || [], loading, addAlarm, toggleAlarm, deleteAlarm };
+  const markAsFired = (id: string) => {
+    if (!db) return;
+    updateDoc(doc(db, 'users', GUEST_UID, 'alarms', id), { 
+      lastFired: new Date().toISOString() 
+    });
+  };
+
+  return { alarms: alarms || [], loading, addAlarm, toggleAlarm, deleteAlarm, markAsFired };
 }
 
 export function useStats() {
