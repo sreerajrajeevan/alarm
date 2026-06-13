@@ -28,7 +28,7 @@ Then run these commands from your project root:
 # 1. Build the static web project
 npm run build
 
-# 2. Add the Android platform (first time only)
+# 2. Add the Android platform (Already Done)
 npm run android:add
 
 # 3. Sync the 'out' directory to the Android project
@@ -39,10 +39,10 @@ npm run android:open
 ```
 
 ### 3. Final Step in Android Studio
-1. Wait for the **Gradle sync** (bottom progress bar) to complete.
-2. Go to **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
-3. Once completed, a popup will appear at the bottom right. Click **locate**.
-4. Your file is in `android/app/build/outputs/apk/debug/app-debug.apk`.
+1.  **Wait for Gradle**: Once Android Studio opens, wait for the **Gradle sync** (bottom progress bar) to complete. This can take a minute.
+2.  **Build APK**: Go to the top menu: **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+3.  **Locate**: Once completed, a popup will appear at the bottom right. Click **locate**.
+4.  **Install**: Your file is in `android/app/build/outputs/apk/debug/app-debug.apk`. Transfer this to your phone and install it!
 
 ---
 
@@ -50,4 +50,4 @@ npm run android:open
 - **AI Vision Quest**: Stop the alarm by photographing a specific object assigned by Gemini.
 - **Nothing Design Language**: Minimalist aesthetics with dot-matrix typography.
 - **Cloud Sync**: Powered by Firebase—your alarms and stats are synced across devices.
-- **Offline Capable**: Works as a native app even without an active internet connection (once installed).
+- **Offline Capable**: Works as a native app even without an active internet connection.
