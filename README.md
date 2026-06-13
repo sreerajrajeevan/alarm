@@ -15,7 +15,7 @@ This project is configured with **Capacitor** to wrap the Next.js static export 
 
 ### 1. Prerequisites
 - [Android Studio](https://android.google.com/studio) installed and configured.
-- **Android SDK** installed via the Android Studio SDK Manager.
+- **Java 17 (JDK 17)**: Required for modern Android builds.
 
 ### 2. Generate the APK
 
@@ -39,10 +39,15 @@ npm run android:open
 ```
 
 ### 3. Final Step in Android Studio
-1.  **Wait for Gradle**: Once Android Studio opens, wait for the **Gradle sync** (bottom progress bar) to complete. This can take a minute.
-2.  **Build APK**: Go to the top menu: **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
-3.  **Locate**: Once completed, a popup will appear at the bottom right. Click **locate**.
-4.  **Install**: Your file is in `android/app/build/outputs/apk/debug/app-debug.apk`. Transfer this to your phone and install it!
+1.  **Wait for Gradle**: Once Android Studio opens, wait for the **Gradle sync** (bottom progress bar) to complete.
+2.  **FIX JAVA ERROR**: If you see a "Java Runtime" or "class file version 61.0" error:
+    - Go to **File > Settings** (or **Android Studio > Settings** on Mac).
+    - Navigate to **Build, Execution, Deployment > Build Tools > Gradle**.
+    - Change the **Gradle JDK** to **Java 17** (or "jbr-17").
+    - Click **"Sync Project with Gradle Files"** (Elephant icon top right).
+3.  **Build APK**: Go to the top menu: **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+4.  **Locate**: Once completed, a popup will appear at the bottom right. Click **locate**.
+5.  **Install**: Your file is in `android/app/build/outputs/apk/debug/app-debug.apk`.
 
 ---
 
