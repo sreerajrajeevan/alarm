@@ -2,7 +2,6 @@
 
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getFirestore, Firestore, onSnapshot, Query, DocumentReference } from 'firebase/firestore';
-import { getAuth, Auth, User, onAuthStateChanged } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 
 const firebaseConfig = {
@@ -17,21 +16,17 @@ const firebaseConfig = {
 const FirebaseContext = createContext<{
   firebaseApp: FirebaseApp | undefined;
   firestore: Firestore | undefined;
-  auth: Auth | undefined;
-  user: User | null | undefined;
 }>({
   firebaseApp: undefined,
   firestore: undefined,
-  auth: undefined,
-  user: undefined,
 });
 
 export const useFirebase = () => useContext(FirebaseContext);
 export const useFirestore = () => useContext(FirebaseContext).firestore;
-export const useAuth = () => useContext(FirebaseContext).auth;
+
+// Mock user for local storage/guest use without Auth
 export const useUser = () => {
-  const { user } = useContext(FirebaseContext);
-  return { user, loading: user === undefined };
+  return { user: { uid: 'guest-user' }, loading: false };
 };
 
 export function useCollection<T>(query: Query | null | undefined) {
@@ -105,24 +100,14 @@ export function useDoc<T>(docRef: DocumentReference | null | undefined) {
 export const FirebaseClientProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [user, setUser] = useState<User | null | undefined>(undefined);
-
-  const { firebaseApp, firestore, auth } = useMemo(() => {
+  const { firebaseApp, firestore } = useMemo(() => {
     const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
     const db = getFirestore(app);
-    const authInstance = getAuth(app);
-    return { firebaseApp: app, firestore: db, auth: authInstance };
+    return { firebaseApp: app, firestore: db };
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-    return () => unsubscribe();
-  }, [auth]);
-
   return (
-    <FirebaseContext.Provider value={{ firebaseApp, firestore, auth, user }}>
+    <FirebaseContext.Provider value={{ firebaseApp, firestore }}>
       {children}
     </FirebaseContext.Provider>
   );

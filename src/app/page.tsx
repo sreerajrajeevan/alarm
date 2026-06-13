@@ -1,51 +1,19 @@
-
 "use client"
 
 import React from 'react';
 import Link from 'next/link';
-import { Plus, BarChart3, Settings, Clock, CheckCircle2, Flame, Bell, Trash2, LogOut, User } from 'lucide-react';
+import { Plus, BarChart3, Settings, Clock, CheckCircle2, Flame, Bell, Trash2, User } from 'lucide-react';
 import { DotMatrixText } from '@/components/DotMatrixText';
 import { NothingCard } from '@/components/NothingCard';
 import { useAlarms, useStats } from '@/lib/alarm-store';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useUser, useAuth } from '@/firebase';
-import { signOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { cn } from '@/lib/utils';
 
 export default function Dashboard() {
-  const { user } = useUser();
-  const auth = useAuth();
   const { alarms, loading: alarmsLoading, toggleAlarm, deleteAlarm } = useAlarms();
   const { stats, loading: statsLoading } = useStats();
-
-  const handleSignIn = async () => {
-    if (!auth) return;
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Sign in failed", error);
-    }
-  };
-
-  if (!user) {
-    return (
-      <div className="max-w-md mx-auto min-h-screen p-6 flex flex-col items-center justify-center text-center gap-8">
-        <DotMatrixText className="text-5xl">AlarmQuest</DotMatrixText>
-        <div className="space-y-4">
-          <p className="text-muted-foreground">Sign in to sync your alarms and track your morning quests across devices.</p>
-          <Button 
-            className="w-full h-14 rounded-2xl bg-primary text-background font-headline text-lg nothing-glow"
-            onClick={handleSignIn}
-          >
-            Get Started
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-md mx-auto min-h-screen p-6 flex flex-col gap-8 pb-24">
@@ -54,7 +22,7 @@ export default function Dashboard() {
           <DotMatrixText as="h1" className="text-3xl font-bold tracking-tighter">AlarmQuest</DotMatrixText>
           <div className="flex items-center gap-2 opacity-60">
              <User className="w-3 h-3" />
-             <span className="text-[10px] uppercase tracking-widest">{user.email?.split('@')[0]}</span>
+             <span className="text-[10px] uppercase tracking-widest">Guest Account</span>
           </div>
         </div>
         <div className="flex gap-2">
@@ -63,9 +31,6 @@ export default function Dashboard() {
               <BarChart3 className="w-5 h-5" />
             </Button>
           </Link>
-          <Button variant="ghost" size="icon" className="rounded-full bg-white/5" onClick={() => auth && signOut(auth)}>
-            <LogOut className="w-5 h-5" />
-          </Button>
           <Link href="/settings">
             <Button variant="ghost" size="icon" className="rounded-full bg-white/5">
               <Settings className="w-5 h-5" />

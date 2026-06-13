@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -11,7 +10,7 @@ import {
   query,
   orderBy
 } from 'firebase/firestore';
-import { useFirestore, useCollection, useDoc, useUser } from '@/firebase';
+import { useFirestore, useCollection, useDoc } from '@/firebase';
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -33,47 +32,48 @@ export interface Stats {
   history: { date: string; time: string; object: string }[];
 }
 
+// Hardcoded for single-user guest experience in Capacitor
+const GUEST_UID = 'guest-user';
+
 export function useAlarms() {
-  const { user } = useUser();
   const db = useFirestore();
 
   const alarmsQuery = useMemo(() => {
-    if (!db || !user) return null;
-    return query(collection(db, 'users', user.uid, 'alarms'), orderBy('time', 'asc'));
-  }, [db, user]);
+    if (!db) return null;
+    return query(collection(db, 'users', GUEST_UID, 'alarms'), orderBy('time', 'asc'));
+  }, [db]);
 
   const { data: alarms, loading } = useCollection<Alarm>(alarmsQuery);
 
   const addAlarm = (alarm: Omit<Alarm, 'id'>) => {
-    if (!db || !user) return;
-    const newAlarmRef = doc(collection(db, 'users', user.uid, 'alarms'));
+    if (!db) return;
+    const newAlarmRef = doc(collection(db, 'users', GUEST_UID, 'alarms'));
     setDoc(newAlarmRef, { ...alarm, id: newAlarmRef.id });
   };
 
   const toggleAlarm = (id: string) => {
-    if (!db || !user) return;
+    if (!db) return;
     const alarm = alarms?.find(a => a.id === id);
     if (alarm) {
-      updateDoc(doc(db, 'users', user.uid, 'alarms', id), { enabled: !alarm.enabled });
+      updateDoc(doc(db, 'users', GUEST_UID, 'alarms', id), { enabled: !alarm.enabled });
     }
   };
 
   const deleteAlarm = (id: string) => {
-    if (!db || !user) return;
-    deleteDoc(doc(db, 'users', user.uid, 'alarms', id));
+    if (!db) return;
+    deleteDoc(doc(db, 'users', GUEST_UID, 'alarms', id));
   };
 
   return { alarms: alarms || [], loading, addAlarm, toggleAlarm, deleteAlarm };
 }
 
 export function useStats() {
-  const { user } = useUser();
   const db = useFirestore();
 
   const statsRef = useMemo(() => {
-    if (!db || !user) return null;
-    return doc(db, 'users', user.uid, 'stats', 'current');
-  }, [db, user]);
+    if (!db) return null;
+    return doc(db, 'users', GUEST_UID, 'stats', 'current');
+  }, [db]);
 
   const { data: statsData, loading } = useDoc<Stats>(statsRef);
 
@@ -85,7 +85,7 @@ export function useStats() {
   }, [statsData]);
 
   const addCompletion = (object: string) => {
-    if (!db || !user || !statsRef) return;
+    if (!db || !statsRef) return;
     
     const now = new Date();
     const newEntry = {
