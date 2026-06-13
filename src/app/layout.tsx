@@ -1,22 +1,14 @@
 
-import type {Metadata, Viewport} from 'next';
+"use client"
+
+import type {Viewport} from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
 import { AlarmMonitor } from '@/components/AlarmMonitor';
 import { Toaster } from '@/components/ui/toaster';
-
-export const metadata: Metadata = {
-  title: 'AlarmQuest | Wake Up with AI',
-  description: 'A modern Android alarm clock application inspired by Nothing OS design language.',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'AlarmQuest',
-  },
-  formatDetection: {
-    telephone: false,
-  },
-};
+import { useEffect } from 'react';
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { useRouter } from 'next/navigation';
 
 export const viewport: Viewport = {
   themeColor: '#161A1E',
@@ -31,6 +23,35 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const setupNotifications = async () => {
+      try {
+        const perm = await LocalNotifications.requestPermissions();
+        if (perm.display !== 'granted') {
+          console.warn('Notification permissions not granted');
+        }
+
+        // Listener for when user clicks the notification
+        LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
+          const alarmId = action.notification.extra?.alarmId;
+          if (alarmId) {
+            router.push(`/ringing?id=${alarmId}`);
+          }
+        });
+      } catch (e) {
+        console.error('Notification setup failed', e);
+      }
+    };
+
+    setupNotifications();
+    
+    return () => {
+      LocalNotifications.removeAllListeners();
+    };
+  }, [router]);
+
   return (
     <html lang="en" className="dark">
       <head>

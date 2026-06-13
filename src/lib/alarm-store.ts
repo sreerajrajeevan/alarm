@@ -12,6 +12,7 @@ import {
   orderBy
 } from 'firebase/firestore';
 import { useFirestore, useCollection, useDoc } from '@/firebase';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -36,6 +37,16 @@ export interface Stats {
 
 const GUEST_UID = 'guest-user';
 
+// Helper to convert string ID to numeric for Capacitor
+const getNumericId = (id: string, dayOffset: number = 0) => {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash << 5) - hash + id.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash) + dayOffset;
+};
+
 export function useAlarms() {
   const db = useFirestore();
 
@@ -45,6 +56,55 @@ export function useAlarms() {
   }, [db]);
 
   const { data: alarms, loading } = useCollection<Alarm>(alarmsQuery);
+
+  // Sync native notifications whenever alarms change
+  useEffect(() => {
+    if (!alarms || alarms.length === 0) return;
+
+    const syncNativeAlarms = async () => {
+      try {
+        const pending = await LocalNotifications.getPending();
+        if (pending.notifications.length > 0) {
+          await LocalNotifications.cancel(pending);
+        }
+
+        for (const alarm of alarms) {
+          if (!alarm.enabled) continue;
+
+          const [hour, minute] = alarm.time.split(':').map(Number);
+          
+          // Schedule for each selected day
+          for (const day of alarm.days) {
+            await LocalNotifications.schedule({
+              notifications: [
+                {
+                  title: 'AlarmQuest Ringing!',
+                  body: alarm.label || 'Time to complete your quest and wake up.',
+                  id: getNumericId(alarm.id, day),
+                  schedule: {
+                    on: {
+                      weekday: (day === 0 ? 7 : day) + 1, // Sunday is 1 in Capacitor, our state is 0
+                      hour,
+                      minute
+                    },
+                    allowWhileIdle: true,
+                    repeats: true
+                  },
+                  extra: { alarmId: alarm.id },
+                  smallIcon: 'ic_stat_alarm',
+                  actionTypeId: 'OPEN_QUEST'
+                }
+              ]
+            });
+          }
+        }
+      } catch (e) {
+        console.error('Failed to sync native notifications', e);
+      }
+    };
+
+    syncNativeAlarms();
+  }, [alarms]);
 
   const addAlarm = (alarm: Omit<Alarm, 'id'>) => {
     if (!db) return;

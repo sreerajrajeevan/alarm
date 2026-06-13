@@ -14,7 +14,7 @@ npm run build
 ```
 
 ### 2. Sync to Android
-This pushes the compiled files from `out/` into the `android/` folder.
+This pushes the compiled files from `out/` into the `android/` folder and updates native plugins.
 ```bash
 npm run android:sync
 ```
@@ -43,7 +43,8 @@ Ensure you are using **Android Studio Hedgehog** or newer. If issues persist, go
 ---
 
 ## ✨ Features
+- **Native Background Alarms**: Alarms work even if the app is closed/cleared using Android's AlarmManager.
 - **AI Vision Quest**: Stop the alarm by photographing a specific object assigned by Gemini.
 - **Nothing Design Language**: Minimalist aesthetics with dot-matrix typography.
-- **Guest Access**: No login required.
+- **Zero-Config Access**: No login required. Data is stored on your device/cloud automatically.
 - **Cloud Sync**: Alarms are synced to Firestore under a guest profile.
