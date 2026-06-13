@@ -1,24 +1,46 @@
 
 # AlarmQuest | Wake Up with AI
 
-A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google Gemini AI. This app is built as a Progressive Web App (PWA), providing a native-like experience on Android.
+A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google Gemini AI.
 
-## 🚀 How to Run Locally
+## 📱 Convert to Android APK
 
-You don't need to host the app to use it. You can run it on your laptop and access it from your phone.
+To turn this project into a real Android App (APK), we use **Capacitor**. Follow these steps:
 
-1. **Start the Server**:
-   ```bash
-   npm install
-   npm run dev
-   ```
-2. **Find your Local IP**:
-   - On Windows: Run `ipconfig` in CMD. Look for `IPv4 Address`.
-   - On Mac/Linux: Run `ifconfig` or `ip addr`.
-3. **Open on Phone**:
-   Open Chrome on your Android phone and navigate to `http://<YOUR-IP-ADDRESS>:9002`.
-4. **Install as App**:
-   Tap the **three dots (⋮)** in Chrome and select **"Add to Home screen"**. It will now behave like a native APK.
+### 1. Prerequisites
+- Install [Android Studio](https://developer.android.com/studio).
+- Install the **Android SDK** and **Command Line Tools** from the Android Studio SDK Manager.
+
+### 2. Prepare the Project
+```bash
+# Install Capacitor dependencies
+npm install
+
+# Build the project (generates the 'out' folder)
+npm run build
+```
+
+### 3. Add Android Platform
+```bash
+# Initialize Capacitor (one-time setup)
+npx cap add android
+```
+
+### 4. Sync and Build APK
+```bash
+# Sync your web code to the Android project
+npx cap sync android
+
+# Open the project in Android Studio
+npx cap open android
+```
+
+### 5. Generate APK in Android Studio
+1. Once Android Studio opens, wait for Gradle to finish syncing.
+2. Go to **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+3. Android Studio will generate the `.apk` file. You can then copy it to your phone and install it.
+
+---
 
 ## ✨ Features
 - **AI Vision Quest**: The only way to stop the alarm is to find and photograph a specific object assigned by the AI.
@@ -33,7 +55,10 @@ You don't need to host the app to use it. You can run it on your laptop and acce
 5. Create a **Firestore Database**.
 6. Get an API Key for Gemini at [Google AI Studio](https://aistudio.google.com/) and add it to `.env` as `GEMINI_API_KEY`.
 
-## 🚀 Deployment (Optional)
-If you want to host it permanently:
-1. Connect this repo to Firebase App Hosting.
-2. Update your `README.md` with the live URL.
+## 🚀 Live Preview (PWA)
+If you don't want to build an APK, you can use the **PWA** version:
+1. Open your hosted site (e.g., Firebase App Hosting link) in Chrome on Android.
+2. Tap **(⋮) > Add to Home screen**.
+3. It will install as an app on your phone.
+
+> **Note on AI**: For the AI Vision Quest to work in a native APK, you must host your Genkit flows on a server (like Firebase Functions or a Cloud Run instance) because native apps cannot run Node.js server actions internally.
