@@ -1,3 +1,22 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "toothbrush",
+      "description": "Electric toothbrush on a stand",
+      "imageUrl": "https://picsum.photos/seed/toothbrush/600/400",
+      "imageHint": "toothbrush bathroom"
+    },
+    {
+      "id": "mug",
+      "description": "Ceramic coffee mug on a table",
+      "imageUrl": "https://picsum.photos/seed/mug/600/400",
+      "imageHint": "coffee mug"
+    },
+    {
+      "id": "keys",
+      "description": "Keyring with several keys",
+      "imageUrl": "https://picsum.photos/seed/keys/600/400",
+      "imageHint": "house keys"
+    }
+  ]
 }
