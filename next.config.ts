@@ -1,5 +1,6 @@
 
 import type {NextConfig} from 'next';
+import webpack from 'webpack';
 
 const nextConfig: NextConfig = {
   output: 'export', // Required for Capacitor to package static files
@@ -35,6 +36,7 @@ const nextConfig: NextConfig = {
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Mock Node.js core modules that aren't available in the browser
+      // This is essential for running Genkit/Gemini in a static webview
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -52,7 +54,33 @@ const nextConfig: NextConfig = {
         zlib: false,
         http2: false,
         async_hooks: false,
+        dgram: false,
+        process: false,
+        util: false,
+        buffer: false,
+        events: false,
+        readline: false,
+        string_decoder: false,
+        timers: false,
+        console: false,
+        vm: false,
+        module: false,
       };
+
+      // Handle the "node:" protocol used in modern Node.js packages
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(/^node:/, (resource: any) => {
+          resource.request = resource.request.replace(/^node:/, '');
+        })
+      );
+
+      // Provide mocks for Global variables if needed
+      config.plugins.push(
+        new webpack.ProvidePlugin({
+          process: 'process/browser',
+          Buffer: ['buffer', 'Buffer'],
+        })
+      );
     }
     return config;
   },
