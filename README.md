@@ -34,6 +34,8 @@ npm run android:sync
 npm run android:open
 ```
 
+**Windows Note:** If `npm run android:add` fails with an ENOENT error, ensure you have run `npm install` first. If it still fails, try creating the missing folder manually: `mkdir %AppData%\npm`
+
 ### 3. Final Step in Android Studio
 1. Wait for the **Gradle sync** (bottom progress bar) to complete.
 2. Go to **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
