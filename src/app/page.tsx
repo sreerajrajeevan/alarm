@@ -1,3 +1,4 @@
+
 "use client"
 
 import React from 'react';
@@ -149,7 +150,7 @@ export default function Dashboard() {
                       </span>
                     ))}
                   </div>
-                  <Link href={`/ringing/${alarm.id}`} className="absolute top-0 right-12 p-2 opacity-0 group-hover:opacity-100">
+                  <Link href={`/ringing?id=${alarm.id}`} className="absolute top-0 right-12 p-2 opacity-0 group-hover:opacity-100">
                     <Bell className="w-3 h-3 text-muted-foreground" />
                   </Link>
                 </NothingCard>
