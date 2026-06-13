@@ -50,6 +50,8 @@ const nextConfig: NextConfig = {
         http: false,
         https: false,
         zlib: false,
+        http2: false,
+        async_hooks: false,
       };
     }
     return config;
