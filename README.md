@@ -2,14 +2,18 @@
 
 A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google Gemini AI. This app is built as a Progressive Web App (PWA), providing a native-like experience on Android without needing a traditional APK.
 
+## 🚀 Live Demo
+**App Link:** [https://YOUR-PROJECT-ID.web.app](https://YOUR-PROJECT-ID.web.app)
+*(Replace this with your actual Firebase App Hosting URL after deployment)*
+
 ## 📱 How to Install on Android
 
 To use AlarmQuest as a native app on your Android device:
 
-1. **Open the App**: Open your deployment URL (e.g., your Firebase App Hosting link) in **Google Chrome** on your Android phone.
+1. **Open the App**: Open your deployment URL (the link above) in **Google Chrome** on your Android phone.
 2. **Menu**: Tap the **three dots (⋮)** in the top-right corner of Chrome.
 3. **Add to Home Screen**: Select **"Install app"** or **"Add to Home screen"**.
-4. **Launch**: Find the **AlarmQuest** icon in your app drawer or on your home screen. It will now launch in full-screen mode without the browser address bar.
+4. **Launch**: Find the **AlarmQuest** icon in your app drawer or on your home screen. It will now launch in full-screen mode without the browser address bar, behaving exactly like a native APK.
 
 ## ✨ Features
 - **AI Vision Quest**: The only way to stop the alarm is to find and photograph a specific object assigned by the AI.
