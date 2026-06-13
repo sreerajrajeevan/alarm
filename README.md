@@ -1,42 +1,45 @@
 # AlarmQuest | Wake Up with AI
 
-A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google Gemini AI.
+A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google Gemini AI. This app is built as a Progressive Web App (PWA), providing a native-like experience on Android without needing a traditional APK.
 
-## Features
-- **AI Vision Quest**: The only way to stop the alarm is to find and photograph a specific object.
-- **Nothing Design Language**: Minimalist aesthetics with dot-matrix typography and glass-card components.
-- **Performance Tracking**: Track your streaks and average wake-up times.
+## 📱 How to Install on Android
 
-## How to add this to GitHub
+To use AlarmQuest as a native app on your Android device:
 
-Follow these steps to push your local project to a GitHub repository:
+1. **Open the App**: Open your deployment URL (e.g., your Firebase App Hosting link) in **Google Chrome** on your Android phone.
+2. **Menu**: Tap the **three dots (⋮)** in the top-right corner of Chrome.
+3. **Add to Home Screen**: Select **"Install app"** or **"Add to Home screen"**.
+4. **Launch**: Find the **AlarmQuest** icon in your app drawer or on your home screen. It will now launch in full-screen mode without the browser address bar.
 
-1. **Create a Repo**: Go to [GitHub](https://github.com/new) and create a new repository (do not initialize with README or .gitignore).
+## ✨ Features
+- **AI Vision Quest**: The only way to stop the alarm is to find and photograph a specific object assigned by the AI.
+- **Nothing Design Language**: Minimalist aesthetics with dot-matrix typography, glass-card components, and a dark monochrome palette.
+- **Cloud Sync**: Powered by Firebase—your alarms and statistics are synced across your devices.
+- **Performance Tracking**: Monitor your wake-up streaks and historical performance.
+
+## 🛠 Tech Stack
+- **Next.js 15 (App Router)**
+- **Genkit + Gemini 2.5 Flash** (Vision AI)
+- **Firebase** (Authentication & Firestore)
+- **Tailwind CSS + ShadCN UI**
+- **Lucide Icons**
+
+## 🚀 Deployment
+
+### How to add this to GitHub
+1. **Create a Repo**: Go to [GitHub](https://github.com/new) and create a new repository.
 2. **Open Terminal**: Navigate to this project folder.
 3. **Run Commands**:
    ```bash
-   # Initialize git
    git init
-
-   # Add all files (the .gitignore will handle exclusions)
    git add .
-
-   # Create initial commit
-   git commit -m "Initial commit: AlarmQuest prototype"
-
-   # Rename branch to main
+   git commit -m "Initial commit: AlarmQuest PWA"
    git branch -M main
-
-   # Link to your remote GitHub repo
-   # Replace <username> and <repo-name> with your details
    git remote add origin https://github.com/<username>/<repo-name>.git
-
-   # Push to GitHub
    git push -u origin main
    ```
 
-## Tech Stack
-- **Next.js 15 (App Router)**
-- **Genkit + Gemini 2.5 Flash**
-- **Tailwind CSS + ShadCN UI**
-- **Lucide Icons**
+### Local Development
+1. Clone the repository.
+2. Create a `.env.local` file with your Firebase and Google AI credentials.
+3. Run `npm install` and `npm run dev`.
