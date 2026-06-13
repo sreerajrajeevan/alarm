@@ -110,7 +110,6 @@ export default function Dashboard() {
                       </span>
                     ))}
                   </div>
-                  {/* Quick test link for demo purposes */}
                   <Link href={`/ringing/${alarm.id}`} className="absolute top-0 right-12 p-2 opacity-0 group-hover:opacity-100">
                     <Bell className="w-3 h-3 text-muted-foreground" />
                   </Link>
