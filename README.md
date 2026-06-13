@@ -18,7 +18,11 @@ This project is configured with **Capacitor** to wrap the Next.js static export 
 - **Android SDK** installed via the Android Studio SDK Manager.
 
 ### 2. Generate the APK
-Run these commands from your project root:
+
+**Windows Fix**: If you see an `ENOENT` error regarding `AppData\Roaming\npm`, run this command once in your terminal:
+`mkdir %AppData%\npm`
+
+Then run these commands from your project root:
 
 ```bash
 # 1. Build the static web project
@@ -34,8 +38,6 @@ npm run android:sync
 npm run android:open
 ```
 
-**Windows Note:** If `npm run android:add` fails with an ENOENT error, ensure you have run `npm install` first. If it still fails, try creating the missing folder manually: `mkdir %AppData%\npm`
-
 ### 3. Final Step in Android Studio
 1. Wait for the **Gradle sync** (bottom progress bar) to complete.
 2. Go to **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
@@ -43,13 +45,6 @@ npm run android:open
 4. Your file is in `android/app/build/outputs/apk/debug/app-debug.apk`.
 
 ---
-
-## 🏠 Local Usage (No Deployment)
-1. Ensure your Gemini API key is in your `.env` file as `NEXT_PUBLIC_GEMINI_API_KEY`.
-2. Run `npm run dev`.
-3. Find your Computer's Local IP (e.g., `192.168.1.5`).
-4. On your Android phone, open Chrome and navigate to `http://<YOUR_IP>:9002`.
-5. Tap the three dots (⋮) -> **Add to Home Screen** for the full-screen experience.
 
 ## ✨ Features
 - **AI Vision Quest**: Stop the alarm by photographing a specific object assigned by Gemini.
