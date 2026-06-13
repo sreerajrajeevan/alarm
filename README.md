@@ -14,7 +14,7 @@ A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google 
 This project is configured with **Capacitor** to wrap the Next.js static export into a native Android app.
 
 ### 1. Prerequisites
-- [Android Studio](https://developer.android.com/studio) installed and configured.
+- [Android Studio](https://android.google.com/studio) installed and configured.
 - **Android SDK** installed via the Android Studio SDK Manager.
 
 ### 2. Generate the APK

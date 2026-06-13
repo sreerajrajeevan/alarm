@@ -12,9 +12,9 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "static": "next build",
-    "android:add": "npx cap add android",
-    "android:sync": "npx cap sync android",
-    "android:open": "npx cap open android"
+    "android:add": "npx @capacitor/cli add android",
+    "android:sync": "npx @capacitor/cli sync android",
+    "android:open": "npx @capacitor/cli open android"
   },
   "dependencies": {
     "@capacitor/android": "^6.0.0",
