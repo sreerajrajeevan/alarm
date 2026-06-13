@@ -14,7 +14,7 @@ A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google 
 This project is configured with **Capacitor** to wrap the Next.js static export into a native Android app.
 
 ### 1. Prerequisites
-- [Android Studio](https://android.google.com/studio) installed and configured.
+- **Android Studio Hedgehog (2023.1.1)** or newer (Required for Capacitor 6).
 - **Java 17 (JDK 17)**: Required for modern Android builds.
 
 ### 2. Generate the APK
@@ -28,7 +28,7 @@ Then run these commands from your project root:
 # 1. Build the static web project
 npm run build
 
-# 2. Add the Android platform (Already Done)
+# 2. Add the Android platform
 npm run android:add
 
 # 3. Sync the 'out' directory to the Android project
@@ -45,9 +45,12 @@ npm run android:open
     - Navigate to **Build, Execution, Deployment > Build Tools > Gradle**.
     - Change the **Gradle JDK** to **Java 17** (or "jbr-17").
     - Click **"Sync Project with Gradle Files"** (Elephant icon top right).
-3.  **Build APK**: Go to the top menu: **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
-4.  **Locate**: Once completed, a popup will appear at the bottom right. Click **locate**.
-5.  **Install**: Your file is in `android/app/build/outputs/apk/debug/app-debug.apk`.
+3.  **FIX 'UNIFIED_TEST_PLATFORM' ERROR**:
+    - This happens if your Android Studio is outdated. Ensure you are on **Hedgehog** or newer.
+    - If you are up to date and still see it: Go to **File > Invalidate Caches...** select all options and click **Invalidate and Restart**.
+4.  **Build APK**: Go to the top menu: **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+5.  **Locate**: Once completed, a popup will appear at the bottom right. Click **locate**.
+6.  **Install**: Your file is in `android/app/build/outputs/apk/debug/app-debug.apk`.
 
 ---
 
