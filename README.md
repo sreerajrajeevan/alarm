@@ -1,49 +1,39 @@
+
 # AlarmQuest | Wake Up with AI
 
-A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google Gemini AI. This app is built as a Progressive Web App (PWA), providing a native-like experience on Android without needing a traditional APK.
+A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google Gemini AI. This app is built as a Progressive Web App (PWA), providing a native-like experience on Android.
 
-## 🚀 Live Demo
-**App Link:** [https://YOUR-PROJECT-ID.web.app](https://YOUR-PROJECT-ID.web.app)
-*(Replace this with your actual Firebase App Hosting URL after deployment)*
+## 🚀 How to Run Locally
 
-## 📱 How to Install on Android
+You don't need to host the app to use it. You can run it on your laptop and access it from your phone.
 
-To use AlarmQuest as a native app on your Android device:
-
-1. **Open the App**: Open your deployment URL (the link above) in **Google Chrome** on your Android phone.
-2. **Menu**: Tap the **three dots (⋮)** in the top-right corner of Chrome.
-3. **Add to Home Screen**: Select **"Install app"** or **"Add to Home screen"**.
-4. **Launch**: Find the **AlarmQuest** icon in your app drawer or on your home screen. It will now launch in full-screen mode without the browser address bar, behaving exactly like a native APK.
+1. **Start the Server**:
+   ```bash
+   npm install
+   npm run dev
+   ```
+2. **Find your Local IP**:
+   - On Windows: Run `ipconfig` in CMD. Look for `IPv4 Address`.
+   - On Mac/Linux: Run `ifconfig` or `ip addr`.
+3. **Open on Phone**:
+   Open Chrome on your Android phone and navigate to `http://<YOUR-IP-ADDRESS>:9002`.
+4. **Install as App**:
+   Tap the **three dots (⋮)** in Chrome and select **"Add to Home screen"**. It will now behave like a native APK.
 
 ## ✨ Features
 - **AI Vision Quest**: The only way to stop the alarm is to find and photograph a specific object assigned by the AI.
-- **Nothing Design Language**: Minimalist aesthetics with dot-matrix typography, glass-card components, and a dark monochrome palette.
+- **Nothing Design Language**: Minimalist aesthetics with dot-matrix typography and glass-card components.
 - **Cloud Sync**: Powered by Firebase—your alarms and statistics are synced across your devices.
-- **Performance Tracking**: Monitor your wake-up streaks and historical performance.
 
-## 🛠 Tech Stack
-- **Next.js 15 (App Router)**
-- **Genkit + Gemini 2.5 Flash** (Vision AI)
-- **Firebase** (Authentication & Firestore)
-- **Tailwind CSS + ShadCN UI**
-- **Lucide Icons**
+## 🛠 Setup (Firebase & AI)
+1. Go to [Firebase Console](https://console.firebase.google.com/).
+2. Create a project and add a Web App.
+3. Copy the `firebaseConfig` values into your `.env` file.
+4. Enable **Google Auth** in the Authentication section.
+5. Create a **Firestore Database**.
+6. Get an API Key for Gemini at [Google AI Studio](https://aistudio.google.com/) and add it to `.env` as `GEMINI_API_KEY`.
 
-## 🚀 Deployment
-
-### How to add this to GitHub
-1. **Create a Repo**: Go to [GitHub](https://github.com/new) and create a new repository.
-2. **Open Terminal**: Navigate to this project folder.
-3. **Run Commands**:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: AlarmQuest PWA"
-   git branch -M main
-   git remote add origin https://github.com/<username>/<repo-name>.git
-   git push -u origin main
-   ```
-
-### Local Development
-1. Clone the repository.
-2. Create a `.env.local` file with your Firebase and Google AI credentials.
-3. Run `npm install` and `npm run dev`.
+## 🚀 Deployment (Optional)
+If you want to host it permanently:
+1. Connect this repo to Firebase App Hosting.
+2. Update your `README.md` with the live URL.
