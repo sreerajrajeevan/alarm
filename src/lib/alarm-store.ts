@@ -22,6 +22,13 @@ export interface Stats {
   history: { date: string; time: string; object: string }[];
 }
 
+export interface UserSettings {
+  aiSensitivity: number;
+  vibrationEnabled: boolean;
+  rampUpEnabled: boolean;
+  theme: 'dark' | 'light';
+}
+
 const DEFAULT_ALARMS: Alarm[] = [
   {
     id: '1',
@@ -108,5 +115,38 @@ export function useStats() {
     localStorage.setItem('alarmquest_stats', JSON.stringify(newStats));
   };
 
-  return { stats, addCompletion };
+  const resetStats = () => {
+    const fresh = {
+      streaks: 0,
+      completedChallenges: 0,
+      averageWakeTime: '00:00',
+      history: []
+    };
+    setStats(fresh);
+    localStorage.setItem('alarmquest_stats', JSON.stringify(fresh));
+  };
+
+  return { stats, addCompletion, resetStats };
+}
+
+export function useSettings() {
+  const [settings, setSettings] = useState<UserSettings>({
+    aiSensitivity: 0.8,
+    vibrationEnabled: true,
+    rampUpEnabled: true,
+    theme: 'dark'
+  });
+
+  useEffect(() => {
+    const stored = localStorage.getItem('alarmquest_settings');
+    if (stored) setSettings(JSON.parse(stored));
+  }, []);
+
+  const updateSettings = (newSettings: Partial<UserSettings>) => {
+    const updated = { ...settings, ...newSettings };
+    setSettings(updated);
+    localStorage.setItem('alarmquest_settings', JSON.stringify(updated));
+  };
+
+  return { settings, updateSettings };
 }

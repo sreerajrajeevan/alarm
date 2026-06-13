@@ -28,9 +28,11 @@ export default function Dashboard() {
               <BarChart3 className="w-5 h-5" />
             </Button>
           </Link>
-          <Button variant="ghost" size="icon" className="rounded-full bg-white/5">
-            <Settings className="w-5 h-5" />
-          </Button>
+          <Link href="/settings">
+            <Button variant="ghost" size="icon" className="rounded-full bg-white/5">
+              <Settings className="w-5 h-5" />
+            </Button>
+          </Link>
         </div>
       </header>
 
