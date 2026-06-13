@@ -5,15 +5,15 @@ A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google 
 
 ## 📱 Convert to Android APK
 
-This project uses **Capacitor** to wrap the Next.js static export into a native Android app.
+This project is optimized for **Capacitor** to wrap the Next.js static export into a native Android app.
 
 ### 1. Prerequisites
 - Install [Android Studio](https://developer.android.com/studio).
 - Install the **Android SDK** from the Android Studio SDK Manager.
 
 ### 2. Setup Environment
-Rename your `.env` variables to be public-accessible for the APK build:
-- Use `NEXT_PUBLIC_GEMINI_API_KEY` for your Gemini API key.
+Ensure your Gemini API key is in your `.env` file:
+- `NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here`
 
 ### 3. Build & Package
 ```bash
