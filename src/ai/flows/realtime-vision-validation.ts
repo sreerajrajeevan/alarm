@@ -1,12 +1,6 @@
-'use server';
 /**
  * @fileOverview This file implements a Genkit flow for real-time vision validation.
- * It processes a camera capture, checks its validity (not dark/blank/screenshot),
- * and identifies if a target object is present with a specified confidence level.
- *
- * - validateImageForObject - A function that handles the image validation process.
- * - RealtimeVisionValidationInput - The input type for the validateImageForObject function.
- * - RealtimeVisionValidationOutput - The return type for the validateImageForObject function.
+ * Refactored for client-side execution in static exports.
  */
 
 import { ai } from '@/ai/genkit';
@@ -25,40 +19,33 @@ export type RealtimeVisionValidationInput = z.infer<typeof RealtimeVisionValidat
 
 const DetectedObjectSchema = z.object({
   label: z.string().describe('The label of the detected object.'),
-  confidence: z.number().min(0).max(1).describe('The estimated confidence score (0-1) of the detection. This is an estimate by the AI.'),
+  confidence: z.number().min(0).max(1).describe('The estimated confidence score (0-1) of the detection.'),
 });
 
 const RealtimeVisionValidationOutputSchema = z.object({
-  isValidImage: z.boolean().describe('True if the image is valid (e.g., well-lit, not blank, appears to be a real-world capture).'),
-  isObjectFound: z.boolean().describe('True if the target object is detected with confidence greater than or equal to minConfidence.'),
-  detectedObjects: z.array(DetectedObjectSchema).describe('A list of all objects detected in the image with their estimated confidence scores.'),
-  errorMessage: z.string().optional().describe('An error message if validation failed, e.g., "Image is too dark."'),
+  isValidImage: z.boolean().describe('True if the image is valid.'),
+  isObjectFound: z.boolean().describe('True if the target object is detected.'),
+  detectedObjects: z.array(DetectedObjectSchema).describe('A list of all objects detected.'),
+  errorMessage: z.string().optional().describe('An error message if validation failed.'),
 });
 export type RealtimeVisionValidationOutput = z.infer<typeof RealtimeVisionValidationOutputSchema>;
 
-// Intermediate schema for what the LLM directly outputs.
-// The flow will then process this to produce RealtimeVisionValidationOutput.
 const LlvmDirectOutputSchema = z.object({
-  isValidImage: z.boolean().describe('True if the image is clear, well-lit, not blank, and appears to be a real-world photograph rather than a digital image (like a screenshot or a solid color).'),
-  imageQualityReason: z.string().optional().describe('If isValidImage is false, describe the quality issue (e.g., "too dark", "blank image", "appears to be a screenshot").'),
-  detectedObjects: z.array(DetectedObjectSchema).describe('A list of all discernible objects in the image with their estimated confidence scores.'),
+  isValidImage: z.boolean(),
+  imageQualityReason: z.string().optional(),
+  detectedObjects: z.array(DetectedObjectSchema),
 });
 
 const visionRecognitionPrompt = ai.definePrompt({
   name: 'visionRecognitionPrompt',
   input: { schema: RealtimeVisionValidationInputSchema },
-  output: { schema: LlvmDirectOutputSchema }, // LLM outputs this schema
+  output: { schema: LlvmDirectOutputSchema },
   model: 'googleai/gemini-2.5-flash-image',
   prompt: [
     { text: `Analyze the provided image.
-
-    1.  Determine if the image is a valid real-world photograph. It should be clear, well-lit, not blank, and should not appear to be a digital image (like a screenshot, a solid color, or a generated image). Set 'isValidImage' to true or false.
-    2.  If 'isValidImage' is false, briefly describe the reason in 'imageQualityReason'.
-    3.  Identify all discernible objects in the image and estimate a confidence score (from 0 to 1) for each detection. Populate the 'detectedObjects' array with these. The confidence score should reflect how sure you are about the object's identity and its clear visibility.
-    
-    The target object the user is looking for is: "{{{targetObject}}}"
-
-    Output your response strictly as a JSON object conforming to the following schema:` },
+    1. Determine if the image is a valid real-world photograph.
+    2. Identify all discernible objects and estimate confidence scores.
+    The target object is: "{{{targetObject}}}"` },
     { media: { url: '{{{imageDataUri}}}' } },
   ],
 });
@@ -74,36 +61,40 @@ const realtimeVisionValidationFlow = ai.defineFlow(
     outputSchema: RealtimeVisionValidationOutputSchema,
   },
   async (input) => {
-    const { output: promptOutput } = await visionRecognitionPrompt(input);
+    try {
+      const { output: promptOutput } = await visionRecognitionPrompt(input);
 
-    if (!promptOutput) {
-      throw new Error('No structured output received from the vision recognition prompt.');
-    }
-
-    let isObjectFound = false;
-    let errorMessage: string | undefined;
-
-    if (!promptOutput.isValidImage) {
-      errorMessage = promptOutput.imageQualityReason || 'The captured image is invalid (e.g., too dark, blank, or not a real-world photo).';
-    } else {
-      // Check for target object with minimum confidence
-      const targetObjectNameLower = input.targetObject.toLowerCase();
-      const foundTarget = promptOutput.detectedObjects.find(
-        obj => obj.label.toLowerCase().includes(targetObjectNameLower) && obj.confidence >= input.minConfidence
-      );
-
-      if (foundTarget) {
-        isObjectFound = true;
-      } else {
-        errorMessage = `Could not find "${input.targetObject}" with sufficient confidence (${(input.minConfidence * 100).toFixed(0)}%). Detected objects: ${promptOutput.detectedObjects.map(o => `${o.label} (${(o.confidence * 100).toFixed(0)}%)`).join(', ') || 'None'}.`;
+      if (!promptOutput) {
+        throw new Error('No output from AI.');
       }
-    }
 
-    return {
-      isValidImage: promptOutput.isValidImage,
-      isObjectFound: isObjectFound,
-      detectedObjects: promptOutput.detectedObjects,
-      errorMessage: errorMessage,
-    };
+      let isObjectFound = false;
+      let errorMessage: string | undefined;
+
+      if (!promptOutput.isValidImage) {
+        errorMessage = promptOutput.imageQualityReason || 'Invalid image quality.';
+      } else {
+        const targetObjectNameLower = input.targetObject.toLowerCase();
+        const foundTarget = promptOutput.detectedObjects.find(
+          obj => obj.label.toLowerCase().includes(targetObjectNameLower) && obj.confidence >= input.minConfidence
+        );
+        if (foundTarget) isObjectFound = true;
+        else errorMessage = `Could not find "${input.targetObject}".`;
+      }
+
+      return {
+        isValidImage: promptOutput.isValidImage,
+        isObjectFound: isObjectFound,
+        detectedObjects: promptOutput.detectedObjects,
+        errorMessage: errorMessage,
+      };
+    } catch (e) {
+      return {
+        isValidImage: false,
+        isObjectFound: false,
+        detectedObjects: [],
+        errorMessage: 'Vision validation failed.',
+      };
+    }
   }
 );

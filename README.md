@@ -5,60 +5,45 @@ A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google 
 
 ## 📱 Convert to Android APK
 
-To turn this project into a real Android App (APK), we use **Capacitor**. Follow these steps:
+This project uses **Capacitor** to wrap the Next.js static export into a native Android app.
 
 ### 1. Prerequisites
 - Install [Android Studio](https://developer.android.com/studio).
-- Install the **Android SDK** and **Command Line Tools** from the Android Studio SDK Manager.
+- Install the **Android SDK** from the Android Studio SDK Manager.
 
-### 2. Prepare the Project
+### 2. Setup Environment
+Rename your `.env` variables to be public-accessible for the APK build:
+- Use `NEXT_PUBLIC_GEMINI_API_KEY` for your Gemini API key.
+
+### 3. Build & Package
 ```bash
-# Install Capacitor dependencies
+# 1. Install dependencies
 npm install
 
-# Build the project (generates the 'out' folder)
+# 2. Build the static project
 npm run build
-```
 
-### 3. Add Android Platform
-```bash
-# Initialize Capacitor (one-time setup)
+# 3. Add/Sync Android platform
 npx cap add android
-```
-
-### 4. Sync and Build APK
-```bash
-# Sync your web code to the Android project
 npx cap sync android
 
-# Open the project in Android Studio
+# 4. Open in Android Studio
 npx cap open android
 ```
 
-### 5. Generate APK in Android Studio
-1. Once Android Studio opens, wait for Gradle to finish syncing.
-2. Go to **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
-3. Android Studio will generate the `.apk` file. You can then copy it to your phone and install it.
+### 4. Generate APK
+In Android Studio:
+1. Go to **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+2. The generated `.apk` will be in `android/app/build/outputs/apk/debug/`.
 
 ---
 
 ## ✨ Features
-- **AI Vision Quest**: The only way to stop the alarm is to find and photograph a specific object assigned by the AI.
-- **Nothing Design Language**: Minimalist aesthetics with dot-matrix typography and glass-card components.
-- **Cloud Sync**: Powered by Firebase—your alarms and statistics are synced across your devices.
+- **AI Vision Quest**: Stop the alarm by photographing a specific object assigned by Gemini.
+- **Nothing Design Language**: Minimalist aesthetics with dot-matrix typography.
+- **Cloud Sync**: Powered by Firebase—your alarms and stats are synced across devices.
 
-## 🛠 Setup (Firebase & AI)
-1. Go to [Firebase Console](https://console.firebase.google.com/).
-2. Create a project and add a Web App.
-3. Copy the `firebaseConfig` values into your `.env` file.
-4. Enable **Google Auth** in the Authentication section.
-5. Create a **Firestore Database**.
-6. Get an API Key for Gemini at [Google AI Studio](https://aistudio.google.com/) and add it to `.env` as `GEMINI_API_KEY`.
-
-## 🚀 Live Preview (PWA)
-If you don't want to build an APK, you can use the **PWA** version:
-1. Open your hosted site (e.g., Firebase App Hosting link) in Chrome on Android.
-2. Tap **(⋮) > Add to Home screen**.
-3. It will install as an app on your phone.
-
-> **Note on AI**: For the AI Vision Quest to work in a native APK, you must host your Genkit flows on a server (like Firebase Functions or a Cloud Run instance) because native apps cannot run Node.js server actions internally.
+## 🛠 Setup (Local & PWA)
+1. Get an API Key at [Google AI Studio](https://aistudio.google.com/) and add it to `.env` as `NEXT_PUBLIC_GEMINI_API_KEY`.
+2. Run `npm run dev` to start locally.
+3. Access via your phone's browser and "Add to Home Screen" for a native-like experience.
