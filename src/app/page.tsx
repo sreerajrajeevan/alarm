@@ -2,25 +2,59 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Plus, BarChart3, Settings, Clock, CheckCircle2, Flame, Bell, Trash2 } from 'lucide-react';
+import { Plus, BarChart3, Settings, Clock, CheckCircle2, Flame, Bell, Trash2, LogOut, User } from 'lucide-react';
 import { DotMatrixText } from '@/components/DotMatrixText';
 import { NothingCard } from '@/components/NothingCard';
 import { useAlarms, useStats } from '@/lib/alarm-store';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useUser, useAuth } from '@/firebase';
+import { signOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { cn } from '@/lib/utils';
 
 export default function Dashboard() {
-  const { alarms, loading, toggleAlarm, deleteAlarm } = useAlarms();
-  const { stats } = useStats();
+  const { user } = useUser();
+  const auth = useAuth();
+  const { alarms, loading: alarmsLoading, toggleAlarm, deleteAlarm } = useAlarms();
+  const { stats, loading: statsLoading } = useStats();
+
+  const handleSignIn = async () => {
+    if (!auth) return;
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Sign in failed", error);
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="max-w-md mx-auto min-h-screen p-6 flex flex-col items-center justify-center text-center gap-8">
+        <DotMatrixText className="text-5xl">AlarmQuest</DotMatrixText>
+        <div className="space-y-4">
+          <p className="text-muted-foreground">Sign in to sync your alarms and track your morning quests across devices.</p>
+          <Button 
+            className="w-full h-14 rounded-2xl bg-primary text-background font-headline text-lg nothing-glow"
+            onClick={handleSignIn}
+          >
+            Get Started
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto min-h-screen p-6 flex flex-col gap-8 pb-24">
       <header className="flex justify-between items-center mt-4">
         <div>
           <DotMatrixText as="h1" className="text-3xl font-bold tracking-tighter">AlarmQuest</DotMatrixText>
-          <p className="text-muted-foreground text-sm font-medium opacity-60">Nothing UI Edition</p>
+          <div className="flex items-center gap-2 opacity-60">
+             <User className="w-3 h-3" />
+             <span className="text-[10px] uppercase tracking-widest">{user.email?.split('@')[0]}</span>
+          </div>
         </div>
         <div className="flex gap-2">
           <Link href="/stats">
@@ -28,6 +62,9 @@ export default function Dashboard() {
               <BarChart3 className="w-5 h-5" />
             </Button>
           </Link>
+          <Button variant="ghost" size="icon" className="rounded-full bg-white/5" onClick={() => auth && signOut(auth)}>
+            <LogOut className="w-5 h-5" />
+          </Button>
           <Link href="/settings">
             <Button variant="ghost" size="icon" className="rounded-full bg-white/5">
               <Settings className="w-5 h-5" />
@@ -39,12 +76,12 @@ export default function Dashboard() {
       <section className="grid grid-cols-2 gap-4">
         <NothingCard className="flex flex-col gap-1 items-center justify-center py-4 bg-primary/5 border-primary/20">
           <Flame className="w-6 h-6 text-primary mb-1" />
-          <span className="text-2xl font-headline font-bold">{stats.streaks}</span>
+          <span className="text-2xl font-headline font-bold">{statsLoading ? "..." : stats.streaks}</span>
           <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Day Streak</span>
         </NothingCard>
         <NothingCard className="flex flex-col gap-1 items-center justify-center py-4">
           <CheckCircle2 className="w-6 h-6 text-muted-foreground/60 mb-1" />
-          <span className="text-2xl font-headline font-bold">{stats.completedChallenges}</span>
+          <span className="text-2xl font-headline font-bold">{statsLoading ? "..." : stats.completedChallenges}</span>
           <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Challenges</span>
         </NothingCard>
       </section>
@@ -57,7 +94,7 @@ export default function Dashboard() {
 
         <ScrollArea className="h-[calc(100vh-420px)] pr-4 -mr-4">
           <div className="flex flex-col gap-3">
-            {loading ? (
+            {alarmsLoading ? (
               Array(3).fill(0).map((_, i) => (
                 <NothingCard key={i} className="animate-pulse h-24 opacity-50" />
               ))

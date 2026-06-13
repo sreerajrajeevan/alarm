@@ -1,6 +1,17 @@
-"use client"
 
-import { useState, useEffect } from 'react';
+'use client';
+
+import { useState, useEffect, useMemo } from 'react';
+import { 
+  collection, 
+  doc, 
+  setDoc, 
+  deleteDoc, 
+  updateDoc,
+  query,
+  orderBy
+} from 'firebase/firestore';
+import { useFirestore, useCollection, useDoc, useUser } from '@/firebase';
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -22,115 +33,92 @@ export interface Stats {
   history: { date: string; time: string; object: string }[];
 }
 
-export interface UserSettings {
-  aiSensitivity: number;
-  vibrationEnabled: boolean;
-  rampUpEnabled: boolean;
-  theme: 'dark' | 'light';
-}
-
-const DEFAULT_ALARMS: Alarm[] = [
-  {
-    id: '1',
-    time: '07:30',
-    enabled: true,
-    days: [1, 2, 3, 4, 5],
-    label: 'Morning Workout',
-    difficulty: 'medium',
-    vibrate: true,
-    rampUp: true,
-  },
-  {
-    id: '2',
-    time: '08:45',
-    enabled: false,
-    days: [0, 6],
-    label: 'Weekend Chill',
-    difficulty: 'easy',
-    vibrate: true,
-    rampUp: false,
-  }
-];
-
 export function useAlarms() {
-  const [alarms, setAlarms] = useState<Alarm[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useUser();
+  const db = useFirestore();
 
-  useEffect(() => {
-    const stored = localStorage.getItem('alarmquest_alarms');
-    if (stored) {
-      setAlarms(JSON.parse(stored));
-    } else {
-      setAlarms(DEFAULT_ALARMS);
-    }
-    setLoading(false);
-  }, []);
+  const alarmsQuery = useMemo(() => {
+    if (!db || !user) return null;
+    return query(collection(db, 'users', user.uid, 'alarms'), orderBy('time', 'asc'));
+  }, [db, user]);
 
-  const saveAlarms = (newAlarms: Alarm[]) => {
-    setAlarms(newAlarms);
-    localStorage.setItem('alarmquest_alarms', JSON.stringify(newAlarms));
-  };
+  const { data: alarms, loading } = useCollection<Alarm>(alarmsQuery);
 
   const addAlarm = (alarm: Omit<Alarm, 'id'>) => {
-    const newAlarm = { ...alarm, id: Math.random().toString(36).substr(2, 9) };
-    saveAlarms([...alarms, newAlarm]);
+    if (!db || !user) return;
+    const newAlarmRef = doc(collection(db, 'users', user.uid, 'alarms'));
+    setDoc(newAlarmRef, { ...alarm, id: newAlarmRef.id });
   };
 
   const toggleAlarm = (id: string) => {
-    saveAlarms(alarms.map(a => a.id === id ? { ...a, enabled: !a.enabled } : a));
+    if (!db || !user) return;
+    const alarm = alarms?.find(a => a.id === id);
+    if (alarm) {
+      updateDoc(doc(db, 'users', user.uid, 'alarms', id), { enabled: !alarm.enabled });
+    }
   };
 
   const deleteAlarm = (id: string) => {
-    saveAlarms(alarms.filter(a => a.id !== id));
+    if (!db || !user) return;
+    deleteDoc(doc(db, 'users', user.uid, 'alarms', id));
   };
 
-  return { alarms, loading, addAlarm, toggleAlarm, deleteAlarm };
+  return { alarms: alarms || [], loading, addAlarm, toggleAlarm, deleteAlarm };
 }
 
 export function useStats() {
-  const [stats, setStats] = useState<Stats>({
-    streaks: 12,
-    completedChallenges: 48,
-    averageWakeTime: '07:12',
-    history: [
-      { date: 'Oct 24', time: '07:05', object: 'Mug' },
-      { date: 'Oct 23', time: '07:15', object: 'Keys' },
-      { date: 'Oct 22', time: '07:00', object: 'Book' },
-    ]
-  });
+  const { user } = useUser();
+  const db = useFirestore();
 
-  useEffect(() => {
-    const stored = localStorage.getItem('alarmquest_stats');
-    if (stored) setStats(JSON.parse(stored));
-  }, []);
+  const statsRef = useMemo(() => {
+    if (!db || !user) return null;
+    return doc(db, 'users', user.uid, 'stats', 'current');
+  }, [db, user]);
+
+  const { data: statsData, loading } = useDoc<Stats>(statsRef);
+
+  const stats = useMemo(() => statsData || {
+    streaks: 0,
+    completedChallenges: 0,
+    averageWakeTime: '00:00',
+    history: []
+  }, [statsData]);
 
   const addCompletion = (object: string) => {
-    const newStats = {
-      ...stats,
-      completedChallenges: stats.completedChallenges + 1,
-      streaks: stats.streaks + 1,
-      history: [{ date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }), object }, ...stats.history].slice(0, 10)
+    if (!db || !user || !statsRef) return;
+    
+    const now = new Date();
+    const newEntry = {
+      date: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+      object
     };
-    setStats(newStats);
-    localStorage.setItem('alarmquest_stats', JSON.stringify(newStats));
+
+    const newHistory = [newEntry, ...(stats.history || [])].slice(0, 10);
+    
+    setDoc(statsRef, {
+      ...stats,
+      completedChallenges: (stats.completedChallenges || 0) + 1,
+      streaks: (stats.streaks || 0) + 1,
+      history: newHistory
+    }, { merge: true });
   };
 
   const resetStats = () => {
-    const fresh = {
+    if (!statsRef) return;
+    setDoc(statsRef, {
       streaks: 0,
       completedChallenges: 0,
       averageWakeTime: '00:00',
       history: []
-    };
-    setStats(fresh);
-    localStorage.setItem('alarmquest_stats', JSON.stringify(fresh));
+    });
   };
 
-  return { stats, addCompletion, resetStats };
+  return { stats, loading, addCompletion, resetStats };
 }
 
 export function useSettings() {
-  const [settings, setSettings] = useState<UserSettings>({
+  const [settings, setSettings] = useState({
     aiSensitivity: 0.8,
     vibrationEnabled: true,
     rampUpEnabled: true,
@@ -142,7 +130,7 @@ export function useSettings() {
     if (stored) setSettings(JSON.parse(stored));
   }, []);
 
-  const updateSettings = (newSettings: Partial<UserSettings>) => {
+  const updateSettings = (newSettings: any) => {
     const updated = { ...settings, ...newSettings };
     setSettings(updated);
     localStorage.setItem('alarmquest_settings', JSON.stringify(updated));

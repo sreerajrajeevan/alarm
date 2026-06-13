@@ -1,0 +1,54 @@
+
+{
+  "entities": {
+    "Alarm": {
+      "title": "Alarm",
+      "description": "A scheduled alarm with AI vision requirements.",
+      "type": "object",
+      "properties": {
+        "time": { "type": "string", "description": "HH:mm format" },
+        "enabled": { "type": "boolean" },
+        "days": { "type": "array", "items": { "type": "number" } },
+        "label": { "type": "string" },
+        "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"] },
+        "vibrate": { "type": "boolean" },
+        "rampUp": { "type": "boolean" }
+      },
+      "required": ["time", "enabled", "days", "difficulty"]
+    },
+    "UserStats": {
+      "title": "User Stats",
+      "description": "Aggregated performance data for a user.",
+      "type": "object",
+      "properties": {
+        "streaks": { "type": "number" },
+        "completedChallenges": { "type": "number" },
+        "averageWakeTime": { "type": "string" },
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "string" },
+              "time": { "type": "string" },
+              "object": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["google.com", "password"]
+  },
+  "firestore": {
+    "/users/{userId}/alarms/{alarmId}": {
+      "schema": "Alarm",
+      "description": "User's individual alarms."
+    },
+    "/users/{userId}/stats/current": {
+      "schema": "UserStats",
+      "description": "User's wake-up performance statistics."
+    }
+  }
+}
