@@ -3,59 +3,48 @@
 
 A modern, high-difficulty alarm clock inspired by Nothing OS, powered by Google Gemini AI.
 
-## 🚀 Deployment
+## 📱 Build & Update Your Android APK
 
-**Live App**: [YOUR_FIREBASE_APP_HOSTING_LINK_HERE](https://alarm-quest.web.app)
+Follow these steps whenever you make changes to the app code.
+
+### 1. Build the Web Project
+This compiles your React/Next.js code into static files.
+```bash
+npm run build
+```
+
+### 2. Sync to Android
+This pushes the compiled files from `out/` into the `android/` folder and updates native plugins.
+```bash
+npm run android:sync
+```
+
+### 3. Build in Android Studio
+1. Run `npm run android:open` to launch the project.
+2. In Android Studio, go to **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+3. Once completed, click **locate** in the popup to find your `app-debug.apk`.
 
 ---
 
-## 📱 Build Your Android APK
+## 🛠 Troubleshooting (Windows)
 
-This project is configured with **Capacitor** to wrap the Next.js static export into a native Android app.
+**Error: `C:\Users\...\AppData\Roaming\npm` not found**
+Run this once: `mkdir %AppData%\npm`
 
-### 1. Prerequisites
-- **Android Studio Hedgehog (2023.1.1)** or newer (Required for Capacitor 6).
-- **Java 17 (JDK 17)**: Required for modern Android builds.
+**Error: Java Runtime version (class file version 61.0)**
+Your Android Studio is using an old Java version.
+1. Go to **File > Settings > Build, Execution, Deployment > Build Tools > Gradle**.
+2. Change **Gradle JDK** to **Java 17**.
+3. Click the "Sync" button (Elephant icon).
 
-### 2. Generate the APK
-
-**Windows Fix**: If you see an `ENOENT` error regarding `AppData\Roaming\npm`, run this command once in your terminal:
-`mkdir %AppData%\npm`
-
-Then run these commands from your project root:
-
-```bash
-# 1. Build the static web project
-npm run build
-
-# 2. Add the Android platform
-npm run android:add
-
-# 3. Sync the 'out' directory to the Android project
-npm run android:sync
-
-# 4. Open the project in Android Studio
-npm run android:open
-```
-
-### 3. Final Step in Android Studio
-1.  **Wait for Gradle**: Once Android Studio opens, wait for the **Gradle sync** (bottom progress bar) to complete.
-2.  **FIX JAVA ERROR**: If you see a "Java Runtime" or "class file version 61.0" error:
-    - Go to **File > Settings** (or **Android Studio > Settings** on Mac).
-    - Navigate to **Build, Execution, Deployment > Build Tools > Gradle**.
-    - Change the **Gradle JDK** to **Java 17** (or "jbr-17").
-    - Click **"Sync Project with Gradle Files"** (Elephant icon top right).
-3.  **FIX 'UNIFIED_TEST_PLATFORM' ERROR**:
-    - This happens if your Android Studio is outdated. Ensure you are on **Hedgehog** or newer.
-    - If you are up to date and still see it: Go to **File > Invalidate Caches...** select all options and click **Invalidate and Restart**.
-4.  **Build APK**: Go to the top menu: **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
-5.  **Locate**: Once completed, a popup will appear at the bottom right. Click **locate**.
-6.  **Install**: Your file is in `android/app/build/outputs/apk/debug/app-debug.apk`.
+**Error: `UNIFIED_TEST_PLATFORM`**
+Ensure you are using **Android Studio Hedgehog** or newer. If issues persist, go to **File > Invalidate Caches...** and restart.
 
 ---
 
 ## ✨ Features
+- **Native Background Alarms**: Alarms work even if the app is closed/cleared using Android's AlarmManager.
 - **AI Vision Quest**: Stop the alarm by photographing a specific object assigned by Gemini.
 - **Nothing Design Language**: Minimalist aesthetics with dot-matrix typography.
-- **Cloud Sync**: Powered by Firebase—your alarms and stats are synced across devices.
-- **Offline Capable**: Works as a native app even without an active internet connection.
+- **Zero-Config Access**: No login required. Data is stored on your device/cloud automatically.
+- **Cloud Sync**: Alarms are synced to Firestore under a guest profile.
